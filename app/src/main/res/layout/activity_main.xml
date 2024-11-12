@@ -9,8 +9,22 @@
         android:id="@+id/status_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:text="Status will be displayed here"
         android:textSize="16sp"
+        android:padding="16dp" />
+
+    <EditText
+        android:id="@+id/message_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Type your message"
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/send_message_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Message"
         android:padding="16dp" />
 </LinearLayout>
