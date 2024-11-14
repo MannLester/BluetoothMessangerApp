@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayMessages() {
+        // Display messages from temporary_message.txt (already existing functionality)
         if (messageFile.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(messageFile))) {
                 String line;
@@ -222,7 +223,28 @@ public class MainActivity extends AppCompatActivity {
         } else {
             updateStatus("temporary_message.txt file does not exist");
         }
+
+        // Display messages from messages.txt in the conversation directory
+        File conversationDir = new File(getFilesDir(), "conversations_storage/conversation_id_1");
+        File messagesFile = new File(conversationDir, "messages.txt");
+
+        if (messagesFile.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(messagesFile))) {
+                String line;
+                updateStatus("Displaying messages from messages.txt:");
+                while ((line = reader.readLine()) != null) {
+                    JSONObject messageData = new JSONObject(line);
+                    updateStatus(messageData.toString(4));
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+                updateStatus("Failed to read messages.txt");
+            }
+        } else {
+            updateStatus("messages.txt file does not exist in the conversation directory");
+        }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

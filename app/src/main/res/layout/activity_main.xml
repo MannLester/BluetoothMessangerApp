@@ -5,14 +5,21 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/status_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="Status will be displayed here"
-        android:textSize="16sp"
-        android:padding="16dp" />
+    <!-- Scrollable TextView for status -->
+    <ScrollView
+        android:layout_width="381dp"
+        android:layout_height="406dp"
+        android:scrollbars="vertical">
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="match_parent"
+            android:layout_height="1000dp"
+            android:padding="16dp"
+            android:text="Status will be displayed here"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </ScrollView>
 
     <EditText
         android:id="@+id/message_input"
