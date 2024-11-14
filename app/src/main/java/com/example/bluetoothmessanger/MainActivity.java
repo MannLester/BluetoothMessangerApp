@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -44,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         sendMessageButton = findViewById(R.id.send_message_button);
 
         bluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        if (bluetoothManager == null || ContextCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.BLUETOOTH_CONNECT}, 1);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {  // Android 12 and above
+            requestBluetoothPermission();
         }
 
         createInternalStorageStructure();
@@ -59,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
                 String messageContent = messageInput.getText().toString().trim();
                 if (!messageContent.isEmpty()) {
                     if (bluetoothManager != null && bluetoothManager.getAdapter() != null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {  // Android 12 and above
+                            if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                                requestBluetoothPermission();
+                                return;
+                            }
+                        }
                         String deviceName = bluetoothManager.getAdapter().getName();
                         storeMessage(messageContent, deviceName);
                         messageInput.setText("");
@@ -72,6 +79,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void requestBluetoothPermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.BLUETOOTH_CONNECT}, 1);
+        }
+    }
+
     private void createInternalStorageStructure() {
         File internalDir = new File(getFilesDir(), "conversations_storage");
         if (!internalDir.exists()) {
@@ -81,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             updateStatus("conversations_storage directory already exists");
         }
 
-// Example for conversation_id_1
+        // Example for conversation_id_1
         File conversationDir = new File(internalDir, "conversation_id_1");
         if (!conversationDir.exists()) {
             conversationDir.mkdirs();
@@ -103,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
             updateStatus("messages.txt file already exists");
         }
 
-        // Create assets folder
         File assetsDir = new File(conversationDir, "assets");
         if (!assetsDir.exists()) {
             assetsDir.mkdirs();
@@ -132,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 conversationsFile.createNewFile();
                 FileWriter writer = new FileWriter(conversationsFile);
-                // Initialize with an empty JSON object or structure if needed
                 JSONObject initialData = new JSONObject();
                 writer.write(initialData.toString());
                 writer.flush();
@@ -155,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         try (FileWriter writer = new FileWriter(messageFile, false)) {
 
             JSONArray participantsArray = new JSONArray();
-            participantsArray.put(deviceName); // Add the Bluetooth device name
+            participantsArray.put(deviceName);
             participantsArray.put("user2");
 
             ArrayList<String> participantsList = new ArrayList<>();
@@ -171,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             messageData.put("participants", participantsArray);
             messageData.put("sender", deviceName);
 
-            String formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String formattedTimestamp = getFormattedTimestamp();
             messageData.put("timestamp", formattedTimestamp);
 
             messageData.put("message", messageContent);
@@ -187,6 +198,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private String getFormattedTimestamp() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {  // Android 8.0 and above
+            return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } else {
+            return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+        }
+    }
+
     private void displayMessages() {
         if (messageFile.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(messageFile))) {
@@ -196,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject messageData = new JSONObject(line);
                     updateStatus(messageData.toString(4));
                 }
-            } catch (IOException | org.json.JSONException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
                 updateStatus("Failed to read temporary_message.txt");
             }
