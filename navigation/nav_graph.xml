@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/chatsFragment">
+
+    <fragment
+        android:id="@+id/chatsFragment"
+        android:name="com.example.beambud.ChatsFragment"
+        android:label="Chats" />
+
+    <fragment
+        android:id="@+id/activeUsersFragment"
+        android:name="com.example.beambud.ActiveUsersFragment"
+        android:label="Active Users" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.beambud.ProfileFragment"
+        android:label="Profile" />
+
+</navigation>

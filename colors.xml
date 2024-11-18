@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="navy_blue">#1B2B4B</color>
+    <color name="light_blue">#87CEEB</color>
+    <color name="light_blue_bg">#E6F3FF</color>
+    <color name="active_blue">#4169E1</color>
+    <color name="gray">#666666</color>
+    <color name="divider">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+</resources>
